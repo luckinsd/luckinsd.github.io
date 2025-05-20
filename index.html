@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banking Mini App</title>
+  <title>Banking Mini App</n><title>
   <style>
     :root {
       --bg: #f2f4f7;
@@ -78,6 +78,7 @@
       margin-top: 1rem;
       text-align: center;
       color: var(--accent);
+      min-height: 1.2em;
     }
   </style>
 </head>
@@ -105,32 +106,38 @@
   </div>
 
   <script>
-    // Telegram WebApp initialization
+    // Initialize Telegram WebApp
     const tg = window.Telegram.WebApp;
     tg.expand();
 
     // Placeholder buttons
     document.getElementById('refresh').addEventListener('click', () => {
-      // no-op
       alert('Refresh not implemented.');
     });
     document.getElementById('send').addEventListener('click', () => {
-      // no-op
       alert('Send Money not implemented.');
     });
 
     // Functional API button: fetch exchange rate from a free API
-    document.getElementById('rate').addEventListener('click', async () => {
-      const display = document.getElementById('rate-display');
+    const rateBtn = document.getElementById('rate');
+    const display = document.getElementById('rate-display');
+    rateBtn.addEventListener('click', async () => {
       display.textContent = 'Loading...';
+      console.log('Rate button clicked');
       try {
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await res.json();
-        const rate = data.rates.EUR;
-        display.textContent = `1 USD = ${rate.toFixed(4)} EUR`;
+        const response = await fetch('https://api.exchangerate.host/latest?base=USD&symbols=EUR');
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        const data = await response.json();
+        console.log('API response', data);
+        const rate = data.rates && data.rates.EUR;
+        if (rate) {
+          display.textContent = `1 USD = ${rate.toFixed(4)} EUR`;
+        } else {
+          display.textContent = 'Rate not available';
+        }
       } catch (err) {
+        console.error('Fetch error', err);
         display.textContent = 'Error fetching rate';
-        console.error(err);
       }
     });
   </script>
