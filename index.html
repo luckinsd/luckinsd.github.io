@@ -3,73 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Mini App</title>
+  <title>Banking Mini App</title>
   <style>
     :root {
-      --bg-gradient-start: #4e54c8;
-      --bg-gradient-end: #8f94fb;
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --primary: #4e54c8;
-      --button-text: #ffffff;
+      --bg: #f2f4f7;
+      --card-bg: #ffffff;
+      --primary: #2b7cff;
+      --text-dark: #333333;
+      --text-light: #666666;
+      --accent: #ff6b6b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
       display: flex;
-      align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      align-items: center;
+      height: 100vh;
     }
-    .card {
+    .container {
+      width: 360px;
       background: var(--card-bg);
       border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      padding: 2rem;
-      max-width: 320px;
-      text-align: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      padding: 1.5rem;
     }
-    h1 {
-      font-size: 1.75rem;
-      color: var(--primary);
+    .header {
+      text-align: center;
       margin-bottom: 1rem;
     }
-    p {
-      font-size: 1rem;
-      color: #333;
-      margin-bottom: 1.5rem;
+    .header h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    .balance {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--text-dark);
+      margin: 1rem 0;
+      text-align: center;
+    }
+    .transactions {
+      margin: 1rem 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .tx {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e0e0e0;
+      color: var(--text-light);
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 1rem;
     }
     button {
-      background: var(--primary);
-      color: var(--button-text);
+      flex: 1;
+      padding: 0.75rem;
       border: none;
       border-radius: 8px;
-      padding: 0.75rem 1.5rem;
       font-size: 1rem;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      background: var(--primary);
+      color: #fff;
+      transition: opacity 0.2s ease;
     }
-    button:active {
-      transform: scale(0.95);
+    button:active { opacity: 0.8; }
+    #rate-display {
+      margin-top: 1rem;
+      text-align: center;
+      color: var(--accent);
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Mini App</h1>
-    <p>Interact seamlessly within Telegram.</p>
-    <button id="action">Click Me</button>
+  <div class="container">
+    <div class="header">
+      <h1>MyBank</h1>
+    </div>
+    <div class="balance">
+      $5,240.75
+    </div>
+    <div class="transactions">
+      <div class="tx"><span>Amazon</span><span>-$120.00</span></div>
+      <div class="tx"><span>Salary</span><span>+$2,500.00</span></div>
+      <div class="tx"><span>Utilities</span><span>-$75.30</span></div>
+      <div class="tx"><span>Coffee Shop</span><span>-$8.50</span></div>
+      <div class="tx"><span>Gym</span><span>-$45.00</span></div>
+    </div>
+    <div class="buttons">
+      <button id="refresh">Refresh</button>
+      <button id="send">Send Money</button>
+      <button id="rate">Get USD→EUR</button>
+    </div>
+    <div id="rate-display"></div>
   </div>
 
   <script>
-    // Initialize Telegram WebApp
+    // Telegram WebApp initialization
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Expand to full height
+    tg.expand();
 
-    const btn = document.getElementById('action');
-    btn.addEventListener('click', () => {
-      // Send data back to bot
-      tg.sendData(JSON.stringify({ action: 'button_clicked' }));
+    // Placeholder buttons
+    document.getElementById('refresh').addEventListener('click', () => {
+      // no-op
+      alert('Refresh not implemented.');
+    });
+    document.getElementById('send').addEventListener('click', () => {
+      // no-op
+      alert('Send Money not implemented.');
+    });
+
+    // Functional API button: fetch exchange rate from a free API
+    document.getElementById('rate').addEventListener('click', async () => {
+      const display = document.getElementById('rate-display');
+      display.textContent = 'Loading...';
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await res.json();
+        const rate = data.rates.EUR;
+        display.textContent = `1 USD = ${rate.toFixed(4)} EUR`;
+      } catch (err) {
+        display.textContent = 'Error fetching rate';
+        console.error(err);
+      }
     });
   </script>
 </body>
